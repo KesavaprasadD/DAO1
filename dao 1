@@ -1,0 +1,173 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace Bank_Atm_management
+{
+    class CreateAccountDAO
+    {
+        CreateAccount ca = new CreateAccount();
+        SqlConnection con =new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog= BankAtm_DB; User Id= sa ;Password = 12345678 ");//LAPTOP-PLLA1OQE\
+        public bool InsertCreateAccount(CreateAccount obj)
+        {
+            bool flag = false;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("insert into CreateAccount(bankname,firstname,lastname,dateofbirth,email,pannumber,typeofaccount,phonenumber,annualincome,nominee) " +
+                "values(@bankname,@firstname,@lastname,@dateofbirth,@email,@pannumber,@typeofaccount,@phonenumber,@annualincome,@nominee)", con);
+            cmd.Parameters.AddWithValue("@bankname", ca.Bankname);
+            cmd.Parameters.AddWithValue("@firstname", ca.Firstname);
+            cmd.Parameters.AddWithValue("@lastname", ca.Lastname);
+            cmd.Parameters.AddWithValue("@dateofbirth", ca.Dob);
+            cmd.Parameters.AddWithValue("@email", ca.Email);
+            cmd.Parameters.AddWithValue("@pannumber", ca.Pannumber);
+            cmd.Parameters.AddWithValue("@typeofaccount", ca.Typeofaccount);
+            cmd.Parameters.AddWithValue("@phonenumber", ca.Phonenumber);
+            cmd.Parameters.AddWithValue("@annualincome", ca.Annualincome);
+            cmd.Parameters.AddWithValue("@nominee", ca.Nominee);
+            int result = cmd.ExecuteNonQuery();
+            if(result > 0)
+            {
+                flag = true;
+            }
+           
+            con.Close();
+            return flag;
+        }
+
+        public bool UpdateAccountDetails()
+        {
+            bool flag = false;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("update CreateAccount set bankname=@bankname,firstname=@firstname,lastname=@lastname,dateofbirth=@dateofbirth,email=@email," +
+                "pannumber=@pannumber,typeofaccount=@typeofaccount,phonenumber=@phonenumber,annualincome=@annualincome,nominee=@nominee",con);
+            cmd.Parameters.AddWithValue("@bankname", ca.Bankname);
+            cmd.Parameters.AddWithValue("@firstname", ca.Firstname);
+            cmd.Parameters.AddWithValue("@lastname", ca.Lastname);
+            cmd.Parameters.AddWithValue("@dateofbirth", ca.Dob);
+            cmd.Parameters.AddWithValue("@email", ca.Email);
+            cmd.Parameters.AddWithValue("@pannumber", ca.Pannumber);
+            cmd.Parameters.AddWithValue("@typeofaccount", ca.Typeofaccount);
+            cmd.Parameters.AddWithValue("@phonenumber", ca.Phonenumber);
+            cmd.Parameters.AddWithValue("@annualincome", ca.Annualincome);
+            cmd.Parameters.AddWithValue("@nominee", ca.Nominee);
+            int result = cmd.ExecuteNonQuery();
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+
+        public bool UpdatePhonenumber()
+        {
+            bool flag = false;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("update CreateAccount set phonenumber=@phonenumber where account_id=@accountid", con);
+            cmd.Parameters.AddWithValue("@phonenumber", ca.Phonenumber);
+            cmd.Parameters.AddWithValue("@accountid", ca.Accountid);           
+            int result = cmd.ExecuteNonQuery();
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+
+        public bool UpdateEmail()
+        {
+            bool flag = true;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("update CreateAccount set email=@email where account_id=@accountid", con);
+            cmd.Parameters.AddWithValue("@email", ca.Email);
+            cmd.Parameters.AddWithValue("@accountid", ca.Accountid);
+            int result = cmd.ExecuteNonQuery();
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+
+        public bool DeleteAccount()
+        {
+            bool flag = true;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("delete CreateAccount where account_id=@accountid", con);
+            cmd.Parameters.AddWithValue("@accountid", ca.Accountid);
+            int result = cmd.ExecuteNonQuery();
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+
+        public List<CreateAccount> ViewAllAccount()
+        {
+            List<CreateAccount> list = new List<CreateAccount>();
+            SqlCommand cmd = new SqlCommand("select account_id,bankname,firstname,lastname,dateofbirth,email,pannumber,typeofaccount,phonenumber,annualincome,nominee from CreateAccout",con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            while(dr.Read())
+            {
+                CreateAccount ca = new CreateAccount(dr.GetInt32(0), dr.GetString(1), dr.GetString(2), dr.GetString(3), dr.GetString(4), dr.GetString(5), dr.GetString(6), dr.GetString(7), dr.GetInt64(8), Convert.ToDouble(dr[9]), dr.GetString(10));
+                list.Add(ca);
+            }
+            return list;
+        }
+
+       public bool spCreateAtmNumber(int account_id)
+        {
+            bool flag = true;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("CheckAccountId",con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@accountid", account_id);
+            int result = (int)cmd.ExecuteScalar();//obj type
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+        public bool spCreatePin(int account_id)
+        {
+            bool flag = true;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("CheckAccountId", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@accountid", account_id);
+            int result = (int)cmd.ExecuteScalar();//obj type
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+        public bool spChangePin(int account_id)
+        {
+            bool flag = true;
+            con.Open();
+            SqlCommand cmd = new SqlCommand("CheckAccountId", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@accountid", account_id);
+            int result = (int)cmd.ExecuteScalar();//obj type
+            if (result > 0)
+            {
+                flag = true;
+            }
+            con.Close();
+            return flag;
+        }
+
+    }
+}
